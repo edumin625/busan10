@@ -14,7 +14,7 @@ const App: React.FC = () => {
             <div className="flex items-center gap-2">
               <span className="text-2xl">🌊</span>
               <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-emerald-400">
-                부산 관광<span className="font-thin text-slate-400">Next</span>
+                부산 관광<span className="font-thin text-slate-400 ml-1">2.0</span>
               </h1>
             </div>
             <div className="hidden md:flex items-center space-x-8">
@@ -66,13 +66,13 @@ const App: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
-                    <h2 className="text-3xl font-bold text-white mb-2">4가지 핵심 전략 (Key Strategies)</h2>
+                    <h2 className="text-3xl font-bold text-white mb-2">4가지 핵심 전략</h2>
                     <p className="text-slate-400 max-w-xl">
                         "새로운 게 없다"는 불만을 해소할 4가지 맞춤형 테마: 숨은 명소, 최신 트렌드, 역사적 깊이, 현지 감성.
                     </p>
                 </div>
                 <div className="text-right hidden md:block">
-                     <span className="text-xs text-slate-500 block">Powered by Gemini 2.5</span>
+                     <span className="text-xs text-slate-500 block">Gemini 2.5 기술 활용</span>
                      <span className="text-xs text-slate-600">카드를 클릭하여 AI 인포그래픽 생성</span>
                 </div>
             </div>
@@ -95,7 +95,7 @@ const App: React.FC = () => {
       {/* Footer */}
       <footer className="py-8 bg-black text-center text-slate-600 text-sm border-t border-slate-800">
         <p>© 2025 데이터 기반 부산 신규 관광 콘텐츠 개발 제안 (V2.0).</p>
-        <p className="mt-2 text-xs">Generated with React & Gemini 2.5</p>
+        <p className="mt-2 text-xs">React & Gemini 2.5로 제작됨</p>
       </footer>
     </div>
   );

@@ -36,7 +36,7 @@ const HiddenGemGame: React.FC = () => {
           
           {/* Front Face */}
           <div className="absolute w-full h-full backface-hidden bg-slate-800 rounded-2xl border border-slate-600 p-8 flex flex-col items-center justify-center shadow-2xl">
-            <span className="absolute top-4 left-4 text-xs font-bold text-slate-500">질문 (QUESTION) {currentCardIndex + 1}/{GAME_FLASHCARDS.length}</span>
+            <span className="absolute top-4 left-4 text-xs font-bold text-slate-500">질문 {currentCardIndex + 1}/{GAME_FLASHCARDS.length}</span>
             <div className="text-4xl mb-4">❓</div>
             <h3 className="text-xl font-bold text-center text-white mb-4">{currentCard.question}</h3>
             <p className="text-slate-400 text-xs mt-4 animate-pulse">클릭하여 정답 확인</p>
@@ -44,7 +44,7 @@ const HiddenGemGame: React.FC = () => {
 
           {/* Back Face */}
           <div className="absolute w-full h-full backface-hidden bg-gradient-to-br from-indigo-900 to-slate-900 rounded-2xl border border-indigo-500 p-8 flex flex-col items-center justify-center shadow-2xl rotate-y-180">
-            <span className="absolute top-4 left-4 text-xs font-bold text-indigo-300">정답 (ANSWER)</span>
+            <span className="absolute top-4 left-4 text-xs font-bold text-indigo-300">정답</span>
             <div className="text-4xl mb-4">💎</div>
             <h3 className="text-2xl font-bold text-center text-white mb-2">{currentCard.answer}</h3>
             <p className="text-indigo-200 text-sm text-center bg-indigo-900/50 px-4 py-2 rounded-lg">
@@ -70,7 +70,7 @@ const HiddenGemGame: React.FC = () => {
             onClick={handleNext}
             className="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-white text-sm font-medium transition-colors"
         >
-            다음 도전
+            다음 문제
         </button>
       </div>
       
