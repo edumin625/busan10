@@ -1,8 +1,13 @@
 import { GoogleGenAI } from "@google/genai";
 import { ThemeStrategy } from "../types";
 
+// Declare process to avoid TypeScript errors when accessing process.env.API_KEY
+// The actual value is replaced by Vite during the build process.
+declare const process: { env: { [key: string]: string | undefined } };
+
 // Initialize Gemini Client
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const apiKey = process.env.API_KEY || '';
+const ai = new GoogleGenAI({ apiKey });
 
 export const generateThemeInfographic = async (theme: ThemeStrategy): Promise<string | null> => {
   try {
@@ -31,10 +36,16 @@ export const generateThemeInfographic = async (theme: ThemeStrategy): Promise<st
       }
     });
 
-    for (const part of response.candidates[0].content.parts) {
-      if (part.inlineData) {
-        return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
-      }
+    const candidates = response.candidates;
+    if (candidates && candidates.length > 0) {
+        const parts = candidates[0].content?.parts;
+        if (parts) {
+            for (const part of parts) {
+                if (part.inlineData) {
+                    return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+                }
+            }
+        }
     }
     return null;
 
