@@ -9,7 +9,7 @@ declare const process: { env: { [key: string]: string | undefined } };
 const apiKey = process.env.API_KEY || '';
 const ai = new GoogleGenAI({ apiKey });
 
-export const generateThemeInfographic = async (theme: ThemeStrategy): Promise<string | null> => {
+export const generateThemeInfographic = async (theme: ThemeStrategy): Promise<string> => {
   try {
     const prompt = `
       Create a high-quality, flat-design infographic style poster for a tourism campaign.
@@ -47,10 +47,10 @@ export const generateThemeInfographic = async (theme: ThemeStrategy): Promise<st
             }
         }
     }
-    return null;
+    throw new Error("이미지 데이터가 반환되지 않았습니다.");
 
   } catch (error) {
     console.error("Error generating infographic:", error);
-    return null;
+    throw error;
   }
 };
