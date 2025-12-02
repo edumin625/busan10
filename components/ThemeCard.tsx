@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ThemeStrategy } from '../types';
 import { generateThemeInfographic } from '../services/geminiService';
 
@@ -10,19 +10,38 @@ const ThemeCard: React.FC<ThemeCardProps> = ({ theme }) => {
   const [image, setImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [cooldown, setCooldown] = useState(0);
+
+  // Timer effect for cooldown
+  useEffect(() => {
+    let timer: any;
+    if (cooldown > 0) {
+      timer = setInterval(() => {
+        setCooldown((prev) => {
+          if (prev <= 1) return 0;
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => {
+      if (timer) clearInterval(timer);
+    };
+  }, [cooldown]);
 
   const handleGenerate = async () => {
+    if (cooldown > 0) return;
+
     setLoading(true);
     setError(null);
     try {
       const result = await generateThemeInfographic(theme);
       setImage(result);
     } catch (err: any) {
-      // Handle Quota/Rate Limit errors specific to the free tier or high usage
-      if (err.message?.includes('429') || err.status === 429 || err.message?.includes('quota')) {
-        setError("사용량이 많아 지연되고 있습니다. 30초 뒤 다시 시도해주세요.");
+      if (err.isRateLimit) {
+        setCooldown(err.retryDelay);
+        setError(err.message);
       } else {
-        setError("이미지를 생성할 수 없습니다. 다시 시도해주세요.");
+        setError(err.message || "이미지를 생성할 수 없습니다. 다시 시도해주세요.");
       }
     } finally {
       setLoading(false);
@@ -45,7 +64,7 @@ const ThemeCard: React.FC<ThemeCardProps> = ({ theme }) => {
              ) : error ? (
                 <div className="flex flex-col items-center gap-2 animate-fade-in">
                     <span className="text-2xl">⚠️</span>
-                    <span className="text-white font-bold text-sm">{error}</span>
+                    <span className="text-white font-bold text-xs whitespace-pre-wrap">{error}</span>
                 </div>
              ) : (
                 <>
@@ -59,9 +78,21 @@ const ThemeCard: React.FC<ThemeCardProps> = ({ theme }) => {
         {!image && !loading && (
             <button 
                 onClick={handleGenerate}
-                className="absolute bottom-4 right-4 bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/40 text-white text-xs px-3 py-1.5 rounded-full flex items-center gap-1 transition-all"
+                disabled={cooldown > 0}
+                className={`absolute bottom-4 right-4 backdrop-blur-md border text-white text-xs px-3 py-1.5 rounded-full flex items-center gap-1 transition-all ${
+                  cooldown > 0 
+                    ? 'bg-red-500/20 border-red-500/40 cursor-not-allowed text-red-100' 
+                    : 'bg-white/20 hover:bg-white/30 border-white/40 cursor-pointer'
+                }`}
             >
-                {error ? (
+                {cooldown > 0 ? (
+                  <>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 animate-pulse" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                    </svg>
+                    {cooldown}초 후 가능
+                  </>
+                ) : error ? (
                   <>
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
                       <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />

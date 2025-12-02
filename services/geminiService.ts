@@ -49,8 +49,36 @@ export const generateThemeInfographic = async (theme: ThemeStrategy): Promise<st
     }
     throw new Error("이미지 데이터가 반환되지 않았습니다.");
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error generating infographic:", error);
-    throw error;
+    
+    let retryDelay = 0;
+    const message = error.message || JSON.stringify(error);
+    
+    // Check for 429/Quota errors in various formats
+    const isRateLimit = message.includes('429') || message.includes('quota') || message.includes('RESOURCE_EXHAUSTED');
+    
+    if (isRateLimit) {
+        // Try to extract retry delay from the error message string (e.g. "retry in 46.94s")
+        const match = message.match(/retry in (\d+(\.\d+)?)s/);
+        if (match && match[1]) {
+            retryDelay = Math.ceil(parseFloat(match[1]));
+        } else {
+            // Default to 60s if not parseable but it is a rate limit
+            retryDelay = 60;
+        }
+        
+        // Throw a structured error object for the UI to handle
+        throw {
+            isRateLimit: true,
+            retryDelay: retryDelay,
+            message: `사용량이 많아 지연되고 있습니다. ${retryDelay}초 뒤 다시 시도해주세요.`
+        };
+    }
+    
+    throw {
+        isRateLimit: false,
+        message: "이미지를 생성할 수 없습니다. 잠시 후 다시 시도해주세요."
+    };
   }
 };
